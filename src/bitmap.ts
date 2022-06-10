@@ -1,6 +1,6 @@
 import { IBitmap } from "./interfaces";
 
-export class Bitmap implements IBitmap{
+export class Bitmap implements IBitmap {
     private _data: number[][];
 
     public get data() { return this._data; }
@@ -10,31 +10,39 @@ export class Bitmap implements IBitmap{
     }
 
     public static create(data: number[][]): IBitmap {
-        if(!data || data.length == 0)
+        if (!data || data.length == 0)
             throw new Error('Bitmap data can not be empty');
-        
+
         const numberOfCol = data[0].length;
         const bitMap = new Bitmap();
+        let oneFound = false;
+
         for (let i = 0; i < data.length; i++) {
-            this.validateRowData(data[i], numberOfCol);
+            this.validateRowData(data[i], numberOfCol, (oneCount) => {
+                if(!oneFound && oneCount > 0)
+                    oneFound = true;
+            });
         }
+        if (!oneFound)
+            throw new Error('Number of 1s should be at least 1');
+
         bitMap._data = data;
 
         return bitMap;
     }
 
-    private static validateRowData(data: number[], numberOfCols: number) {
-        if(data.length != numberOfCols)
+    private static validateRowData(data: number[], numberOfCols: number, process1Count: (numberOfOnes: number) => void) {
+        if (data.length != numberOfCols)
             throw new Error('All rows should contain same number of col');
-        let oneCount: number = 0;
+
+        let numberOfOnes = 0;
         for (let item of data) {
             if (item !== 0 && item !== 1)
                 throw new Error('Only 0 and 1 is allowed in bit map');
             if (item === 1)
-                oneCount++;
+            numberOfOnes++;
         }
-        if (oneCount == 0)
-            throw new Error('Number of 1s should be at least 1');
+        process1Count(numberOfOnes);
     }
 
     public getDistanceToNearestWhite(): number[][] {

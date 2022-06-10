@@ -17,17 +17,17 @@ describe("Test Case Runner", () => {
     testCaseRunner = new TestCaseRunner(readerStub, writerStub);
   });
 
-  it("should throw exception when number of test case is not a number", () => {
+  it("should throw exception when number of test cases is not a number", () => {
     readerStub.readLine.and.returnValue('test');
     expect(() => testCaseRunner.run()).toThrowError('Invalid number of test case');
   });
 
-  it("should throw exception when number of test case is less than one", () => {
+  it("should throw exception when number of test cases is less than one", () => {
     readerStub.readLine.and.returnValue('0');
     expect(() => testCaseRunner.run()).toThrowError('Expected at least one test case');
   });
 
-  it("should throw exception when number of test case is more than 1000", () => {
+  it("should throw exception when number of test cases is more than 1000", () => {
     readerStub.readLine.and.returnValue('1001');
     expect(() => testCaseRunner.run()).toThrowError('Number of test case can not exceed 1000');
   });
