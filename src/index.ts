@@ -1,6 +1,6 @@
-import { ConsoleReader } from "./consoleReader";
-import { ConsoleWriter } from "./consoleWriter";
-import { TestCaseRunner } from "./testCaseRunner";
+import { ConsoleReader } from './consoleReader';
+import { ConsoleWriter } from './consoleWriter';
+import { TestCaseRunner } from './testCaseRunner';
 
 console.log('Started');
 try {

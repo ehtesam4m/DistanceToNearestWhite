@@ -1,4 +1,4 @@
-import { IBitmap } from "./interfaces";
+import { IBitmap } from './interfaces';
 
 export class Bitmap implements IBitmap {
     private _data: number[][];
@@ -19,7 +19,7 @@ export class Bitmap implements IBitmap {
 
         for (let i = 0; i < data.length; i++) {
             this.validateRowData(data[i], numberOfCol, (oneCount) => {
-                if(!oneFound && oneCount > 0)
+                if (!oneFound && oneCount > 0)
                     oneFound = true;
             });
         }
@@ -36,11 +36,11 @@ export class Bitmap implements IBitmap {
             throw new Error('All rows should contain same number of col');
 
         let numberOfOnes = 0;
-        for (let item of data) {
+        for (const item of data) {
             if (item !== 0 && item !== 1)
                 throw new Error('Only 0 and 1 is allowed in bit map');
             if (item === 1)
-            numberOfOnes++;
+                numberOfOnes++;
         }
         process1Count(numberOfOnes);
     }
@@ -51,17 +51,17 @@ export class Bitmap implements IBitmap {
 
         const result: number[][] = [];
 
-        for (var i = 0; i < rows; i++) {
+        for (let i = 0; i < rows; i++) {
             const rowData: number[] = [];
-            for (var j = 0; j < cols; j++) {
+            for (let j = 0; j < cols; j++) {
                 rowData.push(cols + rows);
             }
             result.push(rowData);
         }
 
         // TOP-LEFT
-        for (var i = 0; i < rows; i++) {
-            for (var j = 0; j < cols; j++) {
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
                 if (this._data[i][j] == 1) {
                     result[i][j] = 0;
                 }
@@ -77,8 +77,8 @@ export class Bitmap implements IBitmap {
         }
 
         // BOTTOM-RIGHT
-        for (var i = rows - 1; i >= 0; i--) {
-            for (var j = cols - 1; j >= 0; j--) {
+        for (let i = rows - 1; i >= 0; i--) {
+            for (let j = cols - 1; j >= 0; j--) {
                 if (this._data[i][j] == 1) {
                     result[i][j] = 0;
                 }

@@ -1,5 +1,5 @@
-import { Bitmap } from "./bitmap";
-import { IReader, IWriter, IBitmap } from "./interfaces";
+import { Bitmap } from './bitmap';
+import { IReader, IWriter, IBitmap } from './interfaces';
 
 export class TestCaseRunner {
     private _bitMaps: IBitmap[] = [];
@@ -29,18 +29,18 @@ export class TestCaseRunner {
                 this.validateRowData(rowData, numberOfCols);
                 data.push(rowData);
             }
-            
+
             const bitMap = Bitmap.create(data);
             this._bitMaps.push(bitMap);
 
             const newLine = this._reader.readLine();
             if (newLine != '')
-                throw new Error("Every test case should be separated by a empty new line");
+                throw new Error('Every test case should be separated by a empty new line');
 
         }
 
         for (let i = 0; i < numberOfTestCases; i++) {
-            var result = this._bitMaps[i].getDistanceToNearestWhite();
+            const result = this._bitMaps[i].getDistanceToNearestWhite();
             this.printResult(result);
         }
 
@@ -48,11 +48,11 @@ export class TestCaseRunner {
 
     private  validateNumberOfTestCase(numberOfTestCases: number) {
         if (Number.isNaN(numberOfTestCases))
-            throw new Error("Invalid number of test case");
+            throw new Error('Invalid number of test case');
         if (numberOfTestCases < 1)
-            throw new Error("Expected at least one test case");
+            throw new Error('Expected at least one test case');
         if (numberOfTestCases > 1000)
-            throw new Error("Number of test case can not exceed 1000");
+            throw new Error('Number of test case can not exceed 1000');
     }
 
     private  validateNumberOfRows(numberOfRows: number) {
@@ -81,7 +81,7 @@ export class TestCaseRunner {
 
     private printResult(result: number[][]) {
         for (let i = 0; i < result.length; i++) {
-            this._writer.writeLine(result[i].join(" "));
+            this._writer.writeLine(result[i].join(' '));
         }
         this._writer.writeLine('');
     }

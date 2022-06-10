@@ -1,8 +1,7 @@
-import "jasmine";
-import { Bitmap } from "../src/bitmap";
+import { Bitmap } from '../src/bitmap';
 
-describe("Bitmap", () => {
-    describe("create", () => {
+describe('Bitmap', () => {
+    describe('create', () => {
 
         it('should throw error when data is empty', () => {
             expect(() => Bitmap.create([])).toThrowError('Bitmap data can not be empty');
@@ -31,7 +30,7 @@ describe("Bitmap", () => {
         });
     });
 
-    describe("getDistanceToNearestWhite", () => {
+    describe('getDistanceToNearestWhite', () => {
         it('should return valid result when bitmap has only one element', () => {
             const bitmap = Bitmap.create([[1]]);
             expect(bitmap.getDistanceToNearestWhite()).toEqual([[0]]);
@@ -39,12 +38,12 @@ describe("Bitmap", () => {
 
         it('should return valid result when bitmap has only one row with multiple elements', () => {
             const bitmap = Bitmap.create([[1, 0, 1]]);
-            expect(bitmap.getDistanceToNearestWhite()).toEqual([[0,1,0]]);
+            expect(bitmap.getDistanceToNearestWhite()).toEqual([[0, 1, 0]]);
         });
 
         it('should return valid result when bitmap has multiple row with multiple elements', () => {
             const bitmap = Bitmap.create([[0, 0], [1, 1]]);
-            expect(bitmap.getDistanceToNearestWhite()).toEqual([[1,1],[0,0]]);
+            expect(bitmap.getDistanceToNearestWhite()).toEqual([[1, 1], [0, 0]]);
         });
     });
 });

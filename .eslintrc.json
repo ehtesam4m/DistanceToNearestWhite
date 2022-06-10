@@ -1,10 +1,20 @@
 {
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+        "jasmine": true,
+        "node": true 
     },
+    "overrides": [
+        {
+          "files": [
+            "*.ts"
+          ]
+        }],
     "extends": [
-        "google"
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {

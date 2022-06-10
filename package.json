@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "build": "rimraf ./dist && tsc",
+    "build": "tsc",
     "start:dev": "nodemon --no-stdin",
     "start": "npm run build && node dist/index.js",
     "test": "ts-node node_modules/jasmine/bin/jasmine"
@@ -24,7 +24,6 @@
     "jasmine-ts": "^0.4.0",
     "nodemon": "^2.0.16",
     "readline-sync": "^1.4.10",
-    "rimraf": "^3.0.2",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
   },
