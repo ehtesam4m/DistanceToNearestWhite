@@ -3,7 +3,7 @@ import { Bitmap } from '../src/bitmap';
 import { IBitmap, IReader, IWriter, ITestCaseValidator } from '../src/seedwork/interfaces';
 import { Result } from '../src/seedwork/result';
 
-fdescribe('Test Case Runner', () => {
+describe('Test Case Runner', () => {
   let testCaseRunner: TestCaseRunner;
   let readerStub: jasmine.SpyObj<IReader>;
   let writerStub: jasmine.SpyObj<IWriter>;

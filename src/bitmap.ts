@@ -27,10 +27,10 @@ export class Bitmap implements IBitmap {
                     oneFound = true;
             });
             if(!rowDataValidationResult.isSuccess)
-                return Result.fail(`Bitmap row data: ${rowDataValidationResult.errorMessage}`);
+                return Result.fail(`${rowDataValidationResult.errorMessage}`);
         }
         if (!oneFound)
-            return Result.fail(`Bitmap data: Number of 1s should be at least 1`);
+            return Result.fail(`Number of 1s should be at least 1`);
 
         bitMap._data = data;
 
