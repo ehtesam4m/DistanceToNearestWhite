@@ -1,5 +1,5 @@
-import { IRule } from "../../interfaces";
-import { Result } from "../../result";
+import { IRule } from "../interfaces";
+import { Result } from "../result";
 
 export class ArrayHasLengthRule implements IRule<unknown[]>
 {

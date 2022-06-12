@@ -1,107 +1,92 @@
 import { Bitmap } from './bitmap';
 import { IReader, IWriter, IBitmap } from './seedwork/interfaces';
 import { Result } from './seedwork/result';
-import { TestCaseValidator } from './seedwork/validation/validators/testCaseValidator';
+import { TestCaseValidator } from './testCaseValidator';
 
 export class TestCaseRunner {
     private _bitMaps: IBitmap[] = [];
     constructor(private _reader: IReader, private _writer: IWriter) { }
 
-    public run(): Result {
-        
-        const testCaseReadResult = this.ReadNumberOfTestCases();
-        if(!testCaseReadResult.isSuccess)
+    public run(): void {
+        const readResult = this.readTestCases();
+        if (!readResult.isSuccess) {
+            this._writer.writeLine('Error: '+ readResult.errorMessage);
+            return;
+        }
+        this.showResults();
+    }
+
+    private readTestCases(): Result {
+        const testCaseReadResult = this.readNumberOfTestCases();
+        if (!testCaseReadResult.isSuccess)
             return testCaseReadResult;
-        
 
-        for (let i = 0; i < testCaseReadResult.Value; i++) {
-
+        for (let i = 0; i < testCaseReadResult.value; i++) {
             const rowsAndColsReadResult = this.readNumberOfRowsAndColumns();
-            if(!rowsAndColsReadResult.isSuccess)
+            if (!rowsAndColsReadResult.isSuccess)
                 return rowsAndColsReadResult;
-                
-            const numberOfRows = parseInt(rowsAndColsReadResult.value[0]);
-            const numberOfCols = parseInt(rowsAndColsArray[1]);
-            this.validateNumberOfRows(numberOfRows);
-            this.validateNumberOfColumns(numberOfCols);
 
-            
+            const numberOfRows = rowsAndColsReadResult.value[0];
+            const numberOfCols = rowsAndColsReadResult.value[1];
+
             const data: number[][] = [];
-            for(let i=0; i< numberOfRows; i++)
-            {
-                const rowData = this._reader.readLine().split('').map(x=> parseInt(x));
-                this.validateRowData(rowData, numberOfCols);
-                data.push(rowData);
+            for (let i = 0; i < numberOfRows; i++) {
+                const rowDataReadResult = this.readRowData(numberOfCols);
+                if (!rowDataReadResult.isSuccess)
+                    return rowsAndColsReadResult;
+                data.push(rowsAndColsReadResult.value);
             }
 
-            const bitMap = Bitmap.create(data);
-            this._bitMaps.push(bitMap);
+            const bitMapCreationResult = Bitmap.create(data);
+            if(!bitMapCreationResult.isSuccess)
+                return bitMapCreationResult;
+            this._bitMaps.push(bitMapCreationResult.value);
 
-            const newLine = this._reader.readLine();
-            if (newLine != '')
-                throw new Error('Every test case should be separated by a empty new line');
-
+            const newLineReadResult = this.readEmptyNewLine();
+            if (!newLineReadResult.isSuccess)
+                return newLineReadResult
         }
+        return Result.ok();
+    }
 
-        for (let i = 0; i < numberOfTestCases; i++) {
-            const result = this._bitMaps[i].getDistanceToNearestWhite();
+    private showResults(): void {
+        for (const item of this._bitMaps) {
+            const result = item.getDistanceToNearestWhite();
             this.printResult(result);
         }
-
     }
 
     private readNumberOfTestCases(): Result<number> {
         const value = parseInt(this._reader.readLine());
         const validationResult = TestCaseValidator.validateNumberOfTestCase(value);
-        if(!validationResult.isSuccess)
-            return validationResult;
+        if (!validationResult.isSuccess)
+            return Result.fail<number>(validationResult.errorMessage);
         return Result.ok(value);
     }
 
     private readNumberOfRowsAndColumns(): Result<number[]> {
-        const value = this._reader.readLine().split(' ').map(x=> parseInt(x));
+        const value = this._reader.readLine().split(' ').map(x => parseInt(x));
         const validationResult = TestCaseValidator.validateRowsAndCols(value);
-        if(validationResult.isSuccess)
-            return validationResult
+        if (validationResult.isSuccess)
+            return Result.fail<number[]>(validationResult.errorMessage)
         return Result.ok(value);
 
     }
 
-
-
-    private static validation
-
-    private  validateNumberOfTestCase(numberOfTestCases: number): Result<string> {
-        let errorMessage: string = '';
-        if (Number.isNaN(numberOfTestCases))
-            throw new Error('Invalid number of test case');
-        if (numberOfTestCases < 1)
-            throw new Error('Expected at least one test case');
-        if (numberOfTestCases > 1000)
-            throw new Error('Number of test case can not exceed 1000');
+    private readRowData(numberOfCol: number): Result<number[]> {
+        const value = this._reader.readLine().split('').map(x => parseInt(x));
+        const validationResult = TestCaseValidator.validateRowData(value, numberOfCol);
+        if (validationResult.isSuccess)
+            return Result.fail<number[]>(validationResult.errorMessage)
+        return Result.ok(value);
     }
 
-    private  validateNumberOfRows(numberOfRows: number) {
-        if (Number.isNaN(numberOfRows))
-            throw new Error('Invalid number of rows');
-        if (numberOfRows < 1)
-            throw new Error('At least on row is expected');
-        if (numberOfRows > 182)
-            throw new Error('Number of rows can not exceed 182');
-    }
-
-    private  validateNumberOfColumns(numberOfCols: number) {
-        if (Number.isNaN(numberOfCols))
-            throw new Error('Invalid number of columns');
-        if (numberOfCols < 1)
-            throw new Error('At least on column is expected');
-        if (numberOfCols > 182)
-            throw new Error('Number of columns can not exceed 182');
-    }
-
-    private validateRowData(data: number[], numberOfCols: number) {
-        if(data.length != numberOfCols)
-            throw new Error('Row data does not match column length');
+    private readEmptyNewLine(): Result {
+        const value = this._reader.readLine();
+        const validationResult = TestCaseValidator.validateEmptyNewline(value);
+        if (validationResult.isSuccess)
+            return Result.fail<string>(validationResult.errorMessage)
+        return Result.ok();
     }
 
 

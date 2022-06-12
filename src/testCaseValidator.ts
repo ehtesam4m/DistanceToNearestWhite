@@ -1,11 +1,12 @@
-import { IRule } from "../../interfaces";
-import { Result } from "../../result";
-import { ArrayHasLengthRule } from "../rules/arrayHasLengthRule";
-import { IsNumberRule } from "../rules/isNumberRule";
-import { ValueWithInRangeRule } from "../rules/valueWithInRangeRule";
+import { IRule } from "./seedwork/interfaces";
+import { Result } from "./seedwork/result";
+import { ArrayHasLengthRule } from "./seedwork/rules/arrayHasLengthRule";
+import { DoesMatchStringRule } from "./seedwork/rules/doesMatchStringRule";
+import { IsNumberRule } from "./seedwork/rules/isNumberRule";
+import { ValueWithInRangeRule } from "./seedwork/rules/valueWithInRangeRule";
 
 export class TestCaseValidator {
-    public static validateNumberOfTestCase(value: number): Result<number> {
+    public static validateNumberOfTestCase(value: number): Result {
         return this.validate<number>(
             value,
             [new IsNumberRule()],
@@ -13,7 +14,7 @@ export class TestCaseValidator {
         );
     }
 
-    public static validateRowsAndCols(value: number[]) {
+    public static validateRowsAndCols(value: number[]): Result {
         const lenghValidationResult = this.validateRowsAndColLength(value);
         if (!lenghValidationResult.isSuccess)
             return lenghValidationResult;
@@ -22,13 +23,30 @@ export class TestCaseValidator {
         if (!rowsValidationResult.isSuccess)
             return rowsValidationResult;
         
-        return this.validateCols(value[1]);
+        return this.validateCols(value[0]);
     }
+
+    public static validateRowData(value: number[], numberOfCol: number): Result {
+        return this.validate<number[]>(
+            value,
+            [new ArrayHasLengthRule(numberOfCol)],
+            'Row data'
+        );
+    }
+
+    public static validateEmptyNewline(value: string): Result {
+        return this.validate<string>(
+            value,
+            [new DoesMatchStringRule('')],
+            'New line after each test case'
+        );
+    }
+
 
     private static validateRowsAndColLength(value: number[]) {
         return this.validate<number[]>(value,
             [new ArrayHasLengthRule(2)],
-            'Rows and columns line item validation'
+            'Rows and columns line items'
         );
     }
 
@@ -36,7 +54,7 @@ export class TestCaseValidator {
        return this.validate<number>(value,
             [new IsNumberRule(),
              new ValueWithInRangeRule(1, 182)],
-             'Rows validation'
+             'Rows'
         );
     }
 
@@ -44,11 +62,11 @@ export class TestCaseValidator {
         return this.validate<number>(value,
             [new IsNumberRule(),
              new ValueWithInRangeRule(1, 182)],
-             'Columns validation'
+             'Columns'
         );
     }
 
-    private static validate<T>(value: T, rules: IRule<T>[], textToAppend: string): Result<T> {
+    private static validate<T>(value: T, rules: IRule<T>[], textToAppend: string): Result {
         for (const item of rules) {
             const ruleResult = item.check(value);
             if (!ruleResult.isSuccess)
@@ -56,5 +74,4 @@ export class TestCaseValidator {
         }
         return Result.ok();
     }
-
 }

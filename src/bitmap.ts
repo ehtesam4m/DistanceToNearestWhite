@@ -1,4 +1,7 @@
 import { IBitmap } from './seedwork/interfaces';
+import { Result } from './seedwork/result';
+import { ArrayHasLengthRule } from './seedwork/rules/arrayHasLengthRule';
+import { ArrayIsNotEmptyRule } from './seedwork/rules/arrayIsNotEmptyRule';
 
 export class Bitmap implements IBitmap {
     private _data: number[][];
@@ -9,40 +12,45 @@ export class Bitmap implements IBitmap {
         this._data = [];
     }
 
-    public static create(data: number[][]): IBitmap {
-        if (!data || data.length == 0)
-            throw new Error('Bitmap data can not be empty');
+    public static create(data: number[][]): Result<IBitmap> {
+        const dataEmptyResultCheck = new ArrayIsNotEmptyRule().check(data);
+        if(!dataEmptyResultCheck.isSuccess)
+            return Result.fail(`Bitmap data: ${dataEmptyResultCheck.errorMessage}`);
 
         const numberOfCol = data[0].length;
         const bitMap = new Bitmap();
         let oneFound = false;
 
         for (let i = 0; i < data.length; i++) {
-            this.validateRowData(data[i], numberOfCol, (oneCount) => {
+            const rowDataValidationResult = this.validateRowData(data[i], numberOfCol, (oneCount) => {
                 if (!oneFound && oneCount > 0)
                     oneFound = true;
             });
+            if(!rowDataValidationResult.isSuccess)
+                return Result.fail(`Bitmap row data: ${dataEmptyResultCheck.errorMessage}`);
         }
         if (!oneFound)
-            throw new Error('Number of 1s should be at least 1');
+            return Result.fail(`Bitmap data: Number of 1s should be at least 1`);
 
         bitMap._data = data;
 
-        return bitMap;
+        return Result.ok(bitMap);
     }
 
-    private static validateRowData(data: number[], numberOfCols: number, process1Count: (numberOfOnes: number) => void) {
-        if (data.length != numberOfCols)
-            throw new Error('All rows should contain same number of col');
+    private static validateRowData(data: number[], numberOfCols: number, process1Count: (numberOfOnes: number) => void): Result {
+        const columnLengthCheckResult =  new ArrayHasLengthRule(numberOfCols).check(data);
+        if (!columnLengthCheckResult.isSuccess)
+        return Result.fail(`Bitmap column data: ${columnLengthCheckResult.errorMessage}`);
 
         let numberOfOnes = 0;
         for (const item of data) {
             if (item !== 0 && item !== 1)
-                throw new Error('Only 0 and 1 is allowed in bit map');
+            return Result.fail(`Only 0 and 1 is allowed in bit map`);
             if (item === 1)
                 numberOfOnes++;
         }
         process1Count(numberOfOnes);
+        return Result.ok();
     }
 
     public getDistanceToNearestWhite(): number[][] {
