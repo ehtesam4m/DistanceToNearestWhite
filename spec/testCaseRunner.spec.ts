@@ -1,187 +1,140 @@
 import { TestCaseRunner } from '../src/testCaseRunner';
 import { Bitmap } from '../src/bitmap';
-import { IBitmap, IReader, IWriter } from '../src/interfaces';
+import { IBitmap, IReader, IWriter, ITestCaseValidator } from '../src/seedwork/interfaces';
+import { Result } from '../src/seedwork/result';
 
-describe('Test Case Runner', () => {
+fdescribe('Test Case Runner', () => {
   let testCaseRunner: TestCaseRunner;
   let readerStub: jasmine.SpyObj<IReader>;
   let writerStub: jasmine.SpyObj<IWriter>;
   let bitMapStub: jasmine.SpyObj<IBitmap>;
-  let bitmapCreateSpy: jasmine.Spy<(data: number[][]) => IBitmap>;
+  let testCaseValidatorStub: jasmine.SpyObj<ITestCaseValidator>;
+  let bitmapCreateSpy: jasmine.Spy<(data: number[][]) => Result<IBitmap>>;
+  const errorPrefix = 'Test case runner error: ';
 
   beforeEach(() => {
     readerStub = jasmine.createSpyObj('reader', ['readLine']);
     writerStub = jasmine.createSpyObj('writer', ['writeLine']);
     bitMapStub = jasmine.createSpyObj('bitmap', ['getDistanceToNearestWhite']);
-    bitmapCreateSpy = spyOn(Bitmap, 'create').and.returnValue(bitMapStub);
-    testCaseRunner = new TestCaseRunner(readerStub, writerStub);
+    testCaseValidatorStub = jasmine.createSpyObj('testCaseValidator', ['validateNumberOfTestCase', 'validateRowsAndCols', 'validateRowData', 'validateEmptyNewline']);
+    bitmapCreateSpy = spyOn(Bitmap, 'create').and.returnValue(Result.ok(bitMapStub));
+    testCaseRunner = new TestCaseRunner(readerStub, writerStub, testCaseValidatorStub);
   });
 
-  it('should throw exception when number of test cases is not a number', () => {
-    readerStub.readLine.and.returnValue('test');
-    expect(() => testCaseRunner.run()).toThrowError('Invalid number of test case');
+
+  it('should return result with correct error message when testcase number validation fails', () => {
+    const errorMessage = 'testcase number error';
+    readerStub.readLine.and.returnValue('2');
+    testCaseValidatorStub.validateNumberOfTestCase.and.returnValue(Result.fail(errorMessage));
+
+    const result = testCaseRunner.run();
+
+    expect(testCaseValidatorStub.validateNumberOfTestCase).toHaveBeenCalledWith(2);
+    expect(result.isSuccess).toBe(false);
+    expect(result.errorMessage).toBe(`${errorPrefix}${errorMessage}`);
   });
 
-  it('should throw exception when number of test cases is less than one', () => {
-    readerStub.readLine.and.returnValue('0');
-    expect(() => testCaseRunner.run()).toThrowError('Expected at least one test case');
-  });
-
-  it('should throw exception when number of test cases is more than 1000', () => {
-    readerStub.readLine.and.returnValue('1001');
-    expect(() => testCaseRunner.run()).toThrowError('Number of test case can not exceed 1000');
-  });
-
-  it('should throw exception when row and column data is more than two items', () => {
+  it('should return result with correct error message when rows and cols validation fails but test case number validation is successful', () => {
+    const errorMessage = 'rows and columns error';
     let numberOfCall = 0;
     readerStub.readLine.and.callFake(() => {
       numberOfCall++;
       if (numberOfCall == 1)
         return '1';
       if (numberOfCall == 2)
-        return '2 3 4';
+        return '2 3';
       return '';
     });
-    expect(() => testCaseRunner.run()).toThrowError('Invalid input for rows and columns');
+    testCaseValidatorStub.validateNumberOfTestCase.and.returnValue(Result.ok());
+    testCaseValidatorStub.validateRowsAndCols.and.returnValue(Result.fail(errorMessage));
+
+    const result = testCaseRunner.run();
+    
+    expect(testCaseValidatorStub.validateRowsAndCols).toHaveBeenCalledWith([2,3]);
+    expect(result.isSuccess).toBe(false);
+    expect(result.errorMessage).toBe(`${errorPrefix}${errorMessage}`);
   });
 
-  it('should throw exception when number of row is NaN', () => {
+  it('should return result with correct error message when row data validation fails but testcase number and rows and cols validation is successful', () => {
+    const errorMessage = 'rows data error';
     let numberOfCall = 0;
     readerStub.readLine.and.callFake(() => {
       numberOfCall++;
       if (numberOfCall == 1)
         return '1';
       if (numberOfCall == 2)
-        return 't 3';
-      return '';
-    });
-    expect(() => testCaseRunner.run()).toThrowError('Invalid number of rows');
-  });
-
-  it('should throw exception when number of row is less than 1', () => {
-    let numberOfCall = 0;
-    readerStub.readLine.and.callFake(() => {
-      numberOfCall++;
-      if (numberOfCall == 1)
-        return '1';
-      if (numberOfCall == 2)
-        return '0 3';
-      return '';
-    });
-    expect(() => testCaseRunner.run()).toThrowError('At least on row is expected');
-  });
-
-  it('should throw exception when number of row is greater than 182', () => {
-    let numberOfCall = 0;
-    readerStub.readLine.and.callFake(() => {
-      numberOfCall++;
-      if (numberOfCall == 1)
-        return '1';
-      if (numberOfCall == 2)
-        return '183 3';
-      return '';
-    });
-    expect(() => testCaseRunner.run()).toThrowError('Number of rows can not exceed 182');
-  });
-
-  it('should throw exception when number of column is NaN', () => {
-    let numberOfCall = 0;
-    readerStub.readLine.and.callFake(() => {
-      numberOfCall++;
-      if (numberOfCall == 1)
-        return '1';
-      if (numberOfCall == 2)
-        return '1 t';
-      return '';
-    });
-    expect(() => testCaseRunner.run()).toThrowError('Invalid number of columns');
-  });
-
-  it('should throw exception when number of column is less than 1', () => {
-    let numberOfCall = 0;
-    readerStub.readLine.and.callFake(() => {
-      numberOfCall++;
-      if (numberOfCall == 1)
-        return '1';
-      if (numberOfCall == 2)
-        return '1 0';
-      return '';
-    });
-    expect(() => testCaseRunner.run()).toThrowError('At least on column is expected');
-  });
-
-  it('should throw exception when number of column is greater than 182', () => {
-    let numberOfCall = 0;
-    readerStub.readLine.and.callFake(() => {
-      numberOfCall++;
-      if (numberOfCall == 1)
-        return '1';
-      if (numberOfCall == 2)
-        return '1 183';
-      return '';
-    });
-    expect(() => testCaseRunner.run()).toThrowError('Number of columns can not exceed 182');
-  });
-
-  it('should throw exception when row data size does not match number of columns', () => {
-    let numberOfCall = 0;
-    readerStub.readLine.and.callFake(() => {
-      numberOfCall++;
-      if (numberOfCall == 1)
-        return '1';
-      if (numberOfCall == 2)
-        return '1 1';
+        return '1 2';
       if (numberOfCall == 3)
-        return '11';
+        return '10';
       return '';
     });
-    expect(() => testCaseRunner.run()).toThrowError('Row data does not match column length');
+    testCaseValidatorStub.validateNumberOfTestCase.and.returnValue(Result.ok());
+    testCaseValidatorStub.validateRowsAndCols.and.returnValue(Result.ok());
+    testCaseValidatorStub.validateRowData.and.returnValue(Result.fail(errorMessage));
+
+    const result = testCaseRunner.run();
+    
+    expect(testCaseValidatorStub.validateRowData).toHaveBeenCalledWith([1,0], 2);
+    expect(result.isSuccess).toBe(false);
+    expect(result.errorMessage).toBe(`${errorPrefix}${errorMessage}`);
   });
 
-  it('should throw error when test cases are not separated by new line', () => {
+  it('should return result with correct error message when bitmap data validation fails', () => {
+    const errorMessage = 'bitmap create error';
     let numberOfCall = 0;
     readerStub.readLine.and.callFake(() => {
       numberOfCall++;
       if (numberOfCall == 1)
-        return '2';
-      if (numberOfCall == 2)
-        return '1 1';
-      if (numberOfCall == 3)
         return '1';
+      if (numberOfCall == 2)
+        return '1 2';
+      if (numberOfCall == 3)
+        return '10';
+      return '';
+    });
+    testCaseValidatorStub.validateNumberOfTestCase.and.returnValue(Result.ok());
+    testCaseValidatorStub.validateRowsAndCols.and.returnValue(Result.ok());
+    testCaseValidatorStub.validateRowData.and.returnValue(Result.ok());
+    bitmapCreateSpy.and.returnValue(Result.fail(errorMessage));
+
+    const result = testCaseRunner.run();
+    
+    expect(bitmapCreateSpy).toHaveBeenCalledWith([[1,0]]);
+    expect(result.isSuccess).toBe(false);
+    expect(result.errorMessage).toBe(`${errorPrefix}${errorMessage}`);
+  });
+
+  it('should return result with correct error message when empty newline not found after each test case', () => {
+    const errorMessage = 'new line validation';
+    let numberOfCall = 0;
+    readerStub.readLine.and.callFake(() => {
+      numberOfCall++;
+      if (numberOfCall == 1)
+        return '1';
+      if (numberOfCall == 2)
+        return '1 2';
+      if (numberOfCall == 3)
+        return '10';
       if (numberOfCall == 4)
         return '\t';
       return '';
     });
+    testCaseValidatorStub.validateNumberOfTestCase.and.returnValue(Result.ok());
+    testCaseValidatorStub.validateRowsAndCols.and.returnValue(Result.ok());
+    testCaseValidatorStub.validateRowData.and.returnValue(Result.ok());
+    bitmapCreateSpy.and.returnValue(Result.ok(bitMapStub));
+    testCaseValidatorStub.validateEmptyNewline.and.returnValue(Result.fail(errorMessage));
 
-    expect(() => testCaseRunner.run()).toThrowError('Every test case should be separated by a empty new line');
+    const result = testCaseRunner.run();
+    
+    expect(testCaseValidatorStub.validateEmptyNewline).toHaveBeenCalledWith('\t');
+    expect(result.isSuccess).toBe(false);
+    expect(result.errorMessage).toBe(`${errorPrefix}${errorMessage}`);
   });
 
-  it('should call bitmap creation method with valid arguments when all inputs are valid', () => {
-    bitMapStub.getDistanceToNearestWhite.and.returnValue([[1]]);
-    let numberOfCall = 0;
-    readerStub.readLine.and.callFake(() => {
-      numberOfCall++;
-      if (numberOfCall == 1)
-        return '1';
-      if (numberOfCall == 2)
-        return '1 1';
-      if (numberOfCall == 3)
-        return '1';
-      if (numberOfCall == 4)
-        return '';
-      return '';
-    });
+  it('should write valid result for each test case and return success result when all inputs are valid', () => {
 
-    const result: string[] = [];
-    writerStub.writeLine.and.callFake(line => result.push(line));
-    testCaseRunner.run();
-    expect(bitmapCreateSpy).toHaveBeenCalledTimes(1);
-    expect(bitmapCreateSpy).toHaveBeenCalledWith([[1]]);
-  });
-
-  it('should print valid result for each test when all inputs are valid', () => {
-
-    bitMapStub.getDistanceToNearestWhite.and.returnValue([[6, 7], [8, 9]]);
+    
     let numberOfCall = 0;
     readerStub.readLine.and.callFake(() => {
       numberOfCall++;
@@ -201,6 +154,13 @@ describe('Test Case Runner', () => {
         return '';
       return '';
     });
+
+    testCaseValidatorStub.validateNumberOfTestCase.and.returnValue(Result.ok());
+    testCaseValidatorStub.validateRowsAndCols.and.returnValue(Result.ok());
+    testCaseValidatorStub.validateRowData.and.returnValue(Result.ok());
+    bitmapCreateSpy.and.returnValue(Result.ok(bitMapStub));
+    testCaseValidatorStub.validateEmptyNewline.and.returnValue(Result.ok());
+    bitMapStub.getDistanceToNearestWhite.and.returnValue([[6, 7], [8, 9]]);
 
     const result: string[] = [];
     writerStub.writeLine.and.callFake(line => result.push(line));

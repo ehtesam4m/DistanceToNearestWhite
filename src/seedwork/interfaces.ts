@@ -18,3 +18,10 @@ export interface IRule<T> {
     check(value: T): Result
 }
 
+export interface ITestCaseValidator {
+    validateNumberOfTestCase(value: number): Result
+    validateRowsAndCols(value: number[]): Result
+    validateRowData(value: number[], numberOfCol: number): Result
+    validateEmptyNewline(value: string): Result
+}
+
