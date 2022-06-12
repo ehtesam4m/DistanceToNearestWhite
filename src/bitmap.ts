@@ -1,4 +1,4 @@
-import { IBitmap } from './interfaces';
+import { IBitmap } from './seedwork/interfaces';
 
 export class Bitmap implements IBitmap {
     private _data: number[][];

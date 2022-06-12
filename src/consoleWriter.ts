@@ -1,4 +1,4 @@
-import { IWriter } from './interfaces';
+import { IWriter } from './seedwork/interfaces';
 
 export class ConsoleWriter implements IWriter {
     public writeLine(line: string): void {

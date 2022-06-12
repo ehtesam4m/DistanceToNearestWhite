@@ -1,14 +1,13 @@
 import { Bitmap } from './bitmap';
-import { IReader, IWriter, IBitmap } from './interfaces';
+import { IReader, IWriter, IBitmap } from './seedwork/interfaces';
+import { Result } from './seedwork/result';
 
 export class TestCaseRunner {
     private _bitMaps: IBitmap[] = [];
     constructor(private _reader: IReader, private _writer: IWriter) { }
 
     public run(): void {
-        const input = this._reader.readLine();
-        const numberOfTestCases = parseInt(input);
-        this.validateNumberOfTestCase(numberOfTestCases);
+        
 
         for (let i = 0; i < numberOfTestCases; i++) {
 
@@ -46,7 +45,16 @@ export class TestCaseRunner {
 
     }
 
-    private  validateNumberOfTestCase(numberOfTestCases: number) {
+    private ReadNumberOfTestCases(): Result<string> {
+        const input = this._reader.readLine();
+        const numberOfTestCases = parseInt(input);
+        this.validateNumberOfTestCase(numberOfTestCases);
+    }
+
+    private static validation
+
+    private  validateNumberOfTestCase(numberOfTestCases: number): Result<string> {
+        let errorMessage: string = '';
         if (Number.isNaN(numberOfTestCases))
             throw new Error('Invalid number of test case');
         if (numberOfTestCases < 1)
@@ -85,5 +93,4 @@ export class TestCaseRunner {
         }
         this._writer.writeLine('');
     }
-
 }
