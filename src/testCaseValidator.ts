@@ -9,8 +9,9 @@ export class TestCaseValidator {
     public static validateNumberOfTestCase(value: number): Result {
         return this.validate<number>(
             value,
-            [new IsNumberRule()],
-            'Testcase number validation'
+            [new IsNumberRule(),
+             new ValueWithInRangeRule(1, 1000)],
+            'Testcase number'
         );
     }
 

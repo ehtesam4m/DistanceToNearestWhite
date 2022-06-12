@@ -10,7 +10,7 @@ export class TestCaseRunner {
     public run(): void {
         const readResult = this.readTestCases();
         if (!readResult.isSuccess) {
-            this._writer.writeLine('Error: '+ readResult.errorMessage);
+            this._writer.writeLine('Error: ' + readResult.errorMessage);
             return;
         }
         this.showResults();
@@ -38,7 +38,7 @@ export class TestCaseRunner {
             }
 
             const bitMapCreationResult = Bitmap.create(data);
-            if(!bitMapCreationResult.isSuccess)
+            if (!bitMapCreationResult.isSuccess)
                 return bitMapCreationResult;
             this._bitMaps.push(bitMapCreationResult.value);
 
@@ -56,40 +56,34 @@ export class TestCaseRunner {
         }
     }
 
+    private validateData<T,P>(value: T, validate: (val: T, params?: P) => Result, params?: P): Result<T> {
+        const validationResult = validate(value, params);
+        if (!validationResult.isSuccess)
+            return Result.fail<T>(validationResult.errorMessage);
+        return Result.ok(value);
+    }
+
     private readNumberOfTestCases(): Result<number> {
         const value = parseInt(this._reader.readLine());
-        const validationResult = TestCaseValidator.validateNumberOfTestCase(value);
-        if (!validationResult.isSuccess)
-            return Result.fail<number>(validationResult.errorMessage);
-        return Result.ok(value);
+        return this.validateData(value, TestCaseValidator.validateNumberOfTestCase);
     }
 
     private readNumberOfRowsAndColumns(): Result<number[]> {
         const value = this._reader.readLine().split(' ').map(x => parseInt(x));
-        const validationResult = TestCaseValidator.validateRowsAndCols(value);
-        if (validationResult.isSuccess)
-            return Result.fail<number[]>(validationResult.errorMessage)
-        return Result.ok(value);
+        return this.validateData(value, TestCaseValidator.validateRowsAndCols);
 
     }
 
     private readRowData(numberOfCol: number): Result<number[]> {
         const value = this._reader.readLine().split('').map(x => parseInt(x));
-        const validationResult = TestCaseValidator.validateRowData(value, numberOfCol);
-        if (validationResult.isSuccess)
-            return Result.fail<number[]>(validationResult.errorMessage)
-        return Result.ok(value);
+        return this.validateData(value, TestCaseValidator.validateRowData, numberOfCol);
     }
 
     private readEmptyNewLine(): Result {
         const value = this._reader.readLine();
-        const validationResult = TestCaseValidator.validateEmptyNewline(value);
-        if (validationResult.isSuccess)
-            return Result.fail<string>(validationResult.errorMessage)
-        return Result.ok();
+        return this.validateData(value, TestCaseValidator.validateEmptyNewline);
     }
-
-
+    
     private printResult(result: number[][]) {
         for (let i = 0; i < result.length; i++) {
             this._writer.writeLine(result[i].join(' '));
