@@ -100,7 +100,6 @@ export class Bitmap implements IBitmap {
                 }
             }
         }
-
         return result;
     }
 }

@@ -7,7 +7,7 @@ export class DoesMatchStringRule implements IRule<string>
 
     public check(value: string): Result {
         if (value != this._valueToMatch)
-            return Result.fail(`string is not with in the range of ${this._valueToMatch ?? 'empty'}`);
+            return Result.fail(`string does not match the value of ${this._valueToMatch ?? 'empty'}`);
         return Result.ok();
     }
 }
