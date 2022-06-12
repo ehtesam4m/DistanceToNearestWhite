@@ -33,8 +33,8 @@ export class TestCaseRunner {
             for (let i = 0; i < numberOfRows; i++) {
                 const rowDataReadResult = this.readRowData(numberOfCols);
                 if (!rowDataReadResult.isSuccess)
-                    return rowsAndColsReadResult;
-                data.push(rowsAndColsReadResult.value);
+                    return rowDataReadResult;
+                data.push(rowDataReadResult.value);
             }
 
             const bitMapCreationResult = Bitmap.create(data);

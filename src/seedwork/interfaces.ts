@@ -18,6 +18,3 @@ export interface IRule<T> {
     check(value: T): Result
 }
 
-export interface IValidator {
-    validate(value: unknown): Result
-}

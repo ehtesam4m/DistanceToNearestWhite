@@ -27,7 +27,7 @@ export class Bitmap implements IBitmap {
                     oneFound = true;
             });
             if(!rowDataValidationResult.isSuccess)
-                return Result.fail(`Bitmap row data: ${dataEmptyResultCheck.errorMessage}`);
+                return Result.fail(`Bitmap row data: ${rowDataValidationResult.errorMessage}`);
         }
         if (!oneFound)
             return Result.fail(`Bitmap data: Number of 1s should be at least 1`);
