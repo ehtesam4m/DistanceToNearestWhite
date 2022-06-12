@@ -1,21 +1,26 @@
 import { Bitmap } from './bitmap';
 import { IReader, IWriter, IBitmap } from './seedwork/interfaces';
 import { Result } from './seedwork/result';
+import { TestCaseValidator } from './seedwork/validation/validators/testCaseValidator';
 
 export class TestCaseRunner {
     private _bitMaps: IBitmap[] = [];
     constructor(private _reader: IReader, private _writer: IWriter) { }
 
-    public run(): void {
+    public run(): Result {
+        
+        const testCaseReadResult = this.ReadNumberOfTestCases();
+        if(!testCaseReadResult.isSuccess)
+            return testCaseReadResult;
         
 
-        for (let i = 0; i < numberOfTestCases; i++) {
+        for (let i = 0; i < testCaseReadResult.Value; i++) {
 
-            const rowsAndColsArray = this._reader.readLine().split(' ');
-            if (rowsAndColsArray.length != 2)
-                throw new Error('Invalid input for rows and columns');
+            const rowsAndColsReadResult = this.readNumberOfRowsAndColumns();
+            if(!rowsAndColsReadResult.isSuccess)
+                return rowsAndColsReadResult;
                 
-            const numberOfRows = parseInt(rowsAndColsArray[0]);
+            const numberOfRows = parseInt(rowsAndColsReadResult.value[0]);
             const numberOfCols = parseInt(rowsAndColsArray[1]);
             this.validateNumberOfRows(numberOfRows);
             this.validateNumberOfColumns(numberOfCols);
@@ -45,11 +50,24 @@ export class TestCaseRunner {
 
     }
 
-    private ReadNumberOfTestCases(): Result<string> {
-        const input = this._reader.readLine();
-        const numberOfTestCases = parseInt(input);
-        this.validateNumberOfTestCase(numberOfTestCases);
+    private readNumberOfTestCases(): Result<number> {
+        const value = parseInt(this._reader.readLine());
+        const validationResult = TestCaseValidator.validateNumberOfTestCase(value);
+        if(!validationResult.isSuccess)
+            return validationResult;
+        return Result.ok(value);
     }
+
+    private readNumberOfRowsAndColumns(): Result<number[]> {
+        const value = this._reader.readLine().split(' ').map(x=> parseInt(x));
+        const validationResult = TestCaseValidator.validateRowsAndCols(value);
+        if(validationResult.isSuccess)
+            return validationResult
+        return Result.ok(value);
+
+    }
+
+
 
     private static validation
 

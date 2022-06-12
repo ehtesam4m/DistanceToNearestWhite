@@ -1,15 +1,15 @@
 export class Result<T=unknown> {
     public isSuccess: boolean;
-    public error: Error;
+    public errorMessage: string;
     private _value: T | null;
 
-    private constructor(isSuccess: boolean, error?: Error, value?: T) {
+    private constructor(isSuccess: boolean, errorMessage?: string, value?: T) {
         this.isSuccess = isSuccess;
-        this.error = error;
+        this.errorMessage = errorMessage;
         this._value = value;
     }
 
-    public get Value(): T {
+    public get value(): T {
         if (!this.isSuccess) {
             return null;
         }
@@ -21,6 +21,6 @@ export class Result<T=unknown> {
     }
 
     public static fail<U>(message: string): Result<U> {
-        return new Result<U>(false, new Error(message));
+        return new Result<U>(false, message);
     }
 }
