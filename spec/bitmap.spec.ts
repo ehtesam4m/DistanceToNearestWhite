@@ -12,7 +12,7 @@ describe('Bitmap', () => {
         });
 
         it('should return unsuccessful result with correct error message when number of columns are not consistent', () => {
-            const value = [[1, 0], [1]]; 
+            const value = [[1, 0], [1]];
             const result = Bitmap.create([[1, 0], [1]]);
             expect(result.isSuccess).toBe(false);
             expect(result.errorMessage).toBe(`Bitmap column data: ${new ArrayHasLengthRule(2).check(value[1]).errorMessage}`);

@@ -6,15 +6,15 @@ import { ArrayIsNotEmptyRule } from './seedwork/rules/arrayIsNotEmptyRule';
 export class Bitmap implements IBitmap {
     private _data: number[][];
 
-    public get data() { return this._data; }
-
     private constructor() {
         this._data = [];
     }
 
+    public get data() { return this._data; }
+
     public static create(data: number[][]): Result<IBitmap> {
         const dataEmptyResultCheck = new ArrayIsNotEmptyRule().check(data);
-        if(!dataEmptyResultCheck.isSuccess)
+        if (!dataEmptyResultCheck.isSuccess)
             return Result.fail(`Bitmap data: ${dataEmptyResultCheck.errorMessage}`);
 
         const numberOfCol = data[0].length;
@@ -26,7 +26,7 @@ export class Bitmap implements IBitmap {
                 if (!oneFound && oneCount > 0)
                     oneFound = true;
             });
-            if(!rowDataValidationResult.isSuccess)
+            if (!rowDataValidationResult.isSuccess)
                 return Result.fail(`${rowDataValidationResult.errorMessage}`);
         }
         if (!oneFound)
@@ -38,14 +38,14 @@ export class Bitmap implements IBitmap {
     }
 
     private static validateRowData(data: number[], numberOfCols: number, process1Count: (numberOfOnes: number) => void): Result {
-        const columnLengthCheckResult =  new ArrayHasLengthRule(numberOfCols).check(data);
+        const columnLengthCheckResult = new ArrayHasLengthRule(numberOfCols).check(data);
         if (!columnLengthCheckResult.isSuccess)
-        return Result.fail(`Bitmap column data: ${columnLengthCheckResult.errorMessage}`);
+            return Result.fail(`Bitmap column data: ${columnLengthCheckResult.errorMessage}`);
 
         let numberOfOnes = 0;
         for (const item of data) {
             if (item !== 0 && item !== 1)
-            return Result.fail(`Only 0 and 1 is allowed in bit map`);
+                return Result.fail(`Only 0 and 1 is allowed in bit map`);
             if (item === 1)
                 numberOfOnes++;
         }

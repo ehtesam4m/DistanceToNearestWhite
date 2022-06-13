@@ -24,4 +24,3 @@ export interface ITestCaseValidator {
     validateRowData(value: number[], numberOfCol: number): Result
     validateEmptyNewline(value: string): Result
 }
-

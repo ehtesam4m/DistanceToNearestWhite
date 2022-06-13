@@ -1,4 +1,4 @@
-export class Result<T=unknown> {
+export class Result<T = unknown> {
     public isSuccess: boolean;
     public errorMessage: string;
     private _value: T | null;

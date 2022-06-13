@@ -75,14 +75,14 @@ export class TestCaseRunner {
 
     private readRowData(numberOfCol: number): Result<number[]> {
         const value = this._reader.readLine().split('').map(x => parseInt(x));
-        return this.validateData(value, () =>this._validator.validateRowData(value, numberOfCol));
+        return this.validateData(value, () => this._validator.validateRowData(value, numberOfCol));
     }
 
     private readEmptyNewLine(): Result {
         const value = this._reader.readLine();
         return this.validateData(value, () => this._validator.validateEmptyNewline(value));
     }
-    
+
     private printResult(result: number[][]) {
         for (let i = 0; i < result.length; i++) {
             this._writer.writeLine(result[i].join(' '));

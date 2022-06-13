@@ -49,8 +49,8 @@ describe('Test Case Runner', () => {
     testCaseValidatorStub.validateRowsAndCols.and.returnValue(Result.fail(errorMessage));
 
     const result = testCaseRunner.run();
-    
-    expect(testCaseValidatorStub.validateRowsAndCols).toHaveBeenCalledWith([2,3]);
+
+    expect(testCaseValidatorStub.validateRowsAndCols).toHaveBeenCalledWith([2, 3]);
     expect(result.isSuccess).toBe(false);
     expect(result.errorMessage).toBe(`${errorPrefix}${errorMessage}`);
   });
@@ -73,8 +73,8 @@ describe('Test Case Runner', () => {
     testCaseValidatorStub.validateRowData.and.returnValue(Result.fail(errorMessage));
 
     const result = testCaseRunner.run();
-    
-    expect(testCaseValidatorStub.validateRowData).toHaveBeenCalledWith([1,0], 2);
+
+    expect(testCaseValidatorStub.validateRowData).toHaveBeenCalledWith([1, 0], 2);
     expect(result.isSuccess).toBe(false);
     expect(result.errorMessage).toBe(`${errorPrefix}${errorMessage}`);
   });
@@ -98,8 +98,8 @@ describe('Test Case Runner', () => {
     bitmapCreateSpy.and.returnValue(Result.fail(errorMessage));
 
     const result = testCaseRunner.run();
-    
-    expect(bitmapCreateSpy).toHaveBeenCalledWith([[1,0]]);
+
+    expect(bitmapCreateSpy).toHaveBeenCalledWith([[1, 0]]);
     expect(result.isSuccess).toBe(false);
     expect(result.errorMessage).toBe(`${errorPrefix}${errorMessage}`);
   });
@@ -126,7 +126,7 @@ describe('Test Case Runner', () => {
     testCaseValidatorStub.validateEmptyNewline.and.returnValue(Result.fail(errorMessage));
 
     const result = testCaseRunner.run();
-    
+
     expect(testCaseValidatorStub.validateEmptyNewline).toHaveBeenCalledWith('\t');
     expect(result.isSuccess).toBe(false);
     expect(result.errorMessage).toBe(`${errorPrefix}${errorMessage}`);
@@ -134,7 +134,7 @@ describe('Test Case Runner', () => {
 
   it('should write valid result for each test case and return success result when all inputs are valid', () => {
 
-    
+
     let numberOfCall = 0;
     readerStub.readLine.and.callFake(() => {
       numberOfCall++;
