@@ -1,11 +1,10 @@
 import { TestCaseValidator } from '../src/testCaseValidator';
-import { Result } from '../src/seedwork/result';
 import { IsNumberRule } from '../src/seedwork/rules/isNumberRule';
 import { ValueWithInRangeRule } from '../src/seedwork/rules/valueWithInRangeRule';
 import { ArrayHasLengthRule } from '../src/seedwork/rules/arrayHasLengthRule';
 import { DoesMatchStringRule } from '../src/seedwork/rules/doesMatchStringRule';
 
-fdescribe('Test Case Validator', () => {
+describe('Test Case Validator', () => {
   let testCaseValidator: TestCaseValidator;
   const testCaseNumberErrorMsgPrefix = 'Testcase number';
   const rowAndColsLineErrorMsgPrefix = 'Rows and columns line items';
