@@ -1,4 +1,6 @@
 import { Bitmap } from '../src/bitmap';
+import { ArrayHasLengthRule } from '../src/seedwork/rules/arrayHasLengthRule';
+import { ArrayIsNotEmptyRule } from '../src/seedwork/rules/arrayIsNotEmptyRule';
 
 describe('Bitmap', () => {
     describe('create', () => {
@@ -6,13 +8,14 @@ describe('Bitmap', () => {
         it('should return unsuccessful result with correct error message where data is empty', () => {
             const result = Bitmap.create([]);
             expect(result.isSuccess).toBe(false);
-            expect(result.errorMessage).toBe(`Bitmap data: array can not be empty`);
+            expect(result.errorMessage).toBe(`Bitmap data: ${new ArrayIsNotEmptyRule().check([]).errorMessage}`);
         });
 
         it('should return unsuccessful result with correct error message when number of columns are not consistent', () => {
+            const value = [[1, 0], [1]]; 
             const result = Bitmap.create([[1, 0], [1]]);
             expect(result.isSuccess).toBe(false);
-            expect(result.errorMessage).toBe(`Bitmap column data: length does not match expected length of 2`);
+            expect(result.errorMessage).toBe(`Bitmap column data: ${new ArrayHasLengthRule(2).check(value[1]).errorMessage}`);
         });
 
         it('should return unsuccessful result with correct error message when data contains element other than 0 or 1', () => {
